@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Montserrat:wght@400;500;600;700&amp;family=Kudryashev+Display:ital,wght@0,400;0,700;1,400&amp;family=Sacramento&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#35023d",
+                        "surface-container-highest": "#efe0d2",
+                        "outline-variant": "#bfc8c9",
+                        "secondary-container": "#fbb9fd",
+                        "primary-fixed-dim": "#93d1d6",
+                        "inverse-on-surface": "#feeee0",
+                        "secondary": "#814a86",
+                        "primary": "#00464a",
+                        "surface": "#fff8f4",
+                        "surface-container-low": "#fff1e6",
+                        "surface-container": "#fbebdd",
+                        "tertiary-fixed": "#a5f0e7",
+                        "tertiary-container": "#016059",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#66326c",
+                        "background": "#fff8f4",
+                        "secondary-fixed-dim": "#f2b1f4",
+                        "tertiary": "#004641",
+                        "on-tertiary-fixed-variant": "#00504a",
+                        "on-tertiary-container": "#8dd8ce",
+                        "surface-container-high": "#f5e5d8",
+                        "on-primary-fixed-variant": "#004f54",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#382f26",
+                        "surface-tint": "#26676c",
+                        "surface-bright": "#fff8f4",
+                        "surface-variant": "#efe0d2",
+                        "primary-fixed": "#afedf3",
+                        "on-primary-container": "#97d5da",
+                        "outline": "#6f7979",
+                        "on-tertiary-fixed": "#00201d",
+                        "on-primary-fixed": "#002022",
+                        "on-surface": "#221a12",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#221a12",
+                        "tertiary-fixed-dim": "#8ad4cb",
+                        "on-secondary-container": "#7a447f",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#ffd6fd",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#1a5e63",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#93d1d6",
+                        "on-surface-variant": "#3f4849",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#e7d7ca"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Epilogue", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                        "label": ["Plus Jakarta Sans", "sans-serif"],
+                        "serif": ["Kudryashev Display", "serif"],
+                        "script": ["Sacramento", "cursive"]
+                    }
+                },
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #fff8f4;
+        }
+
+        .editorial-shadow {
+            box-shadow: 0 20px 40px -15px rgba(26, 94, 99, 0.08);
+        }
+    </style>
+</head>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const slides = Array.from(document.querySelectorAll('.review-slide'));
+        const dots = Array.from(document.querySelectorAll('.review-dot'));
+        const prevBtn = document.getElementById('prevReview');
+        const nextBtn = document.getElementById('nextReview');
+
+        if (!slides.length || !dots.length || !prevBtn || !nextBtn) {
+            console.error('Carousel: faltam elementos (slides/dots/botões).');
+            return;
+        }
+
+        let current = 0;
+        let autoTimer = null;
+        const autoMs = 6000;
+
+        function render(index) {
+            slides.forEach((s, i) => s.classList.toggle('hidden', i !== index));
+            dots.forEach((d, i) => {
+                d.classList.toggle('bg-white', i === index);
+                d.classList.toggle('bg-white/40', i !== index);
+            });
+            current = index;
+        }
+
+        function next() { render((current + 1) % slides.length); }
+        function prev() { render((current - 1 + slides.length) % slides.length); }
+
+        prevBtn.addEventListener('click', prev);
+        nextBtn.addEventListener('click', next);
+        dots.forEach((dot, i) => dot.addEventListener('click', () => render(i)));
+
+        function startAuto() {
+            stopAuto();
+            autoTimer = setInterval(next, autoMs);
+        }
+        function stopAuto() {
+            if (autoTimer) clearInterval(autoTimer);
+            autoTimer = null;
+        }
+
+        const wrap = document.getElementById('reviews');
+        wrap.addEventListener('mouseenter', stopAuto);
+        wrap.addEventListener('mouseleave', startAuto);
+
+        render(0);
+        startAuto();
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const track = document.getElementById('destTrack');
+        const prev = document.getElementById('destPrev');
+        const next = document.getElementById('destNext');
+
+        if (!track || !prev || !next) return;
+
+        function getStep() {
+            const firstCard = track.querySelector('.snap-start');
+            if (!firstCard) return 420; // fallback
+            const gap = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || 0);
+            return firstCard.getBoundingClientRect().width + gap;
+        }
+
+        prev.addEventListener('click', function () {
+            track.scrollBy({ left: -getStep(), behavior: 'smooth' });
+        });
+
+        next.addEventListener('click', function () {
+            track.scrollBy({ left: getStep(), behavior: 'smooth' });
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.getElementById('mobileMenuBtn');
+        const menu = document.getElementById('mobileMenu');
+        if (!btn || !menu) return;
+
+        btn.addEventListener('click', function () {
+            menu.classList.toggle('hidden');
+        });
+    });
+</script>
+<body class="text-on-surface overflow-x-hidden">
+    <!-- TopAppBar -->
+    <nav class="fixed top-0 z-50 w-full bg-[#fff8f4] dark:bg-[#221a12] border-b border-[#efe0d2]">
+        <div class="max-w-7xl mx-auto px-4 md:px-8">
+            <div class="flex items-center justify-between py-3">
+                <!-- Logo -->
+                <a href="#" class="shrink-0">
+                    <img src="images/logo.png"
+                         alt="Logótipo Rosa dos Destinos"
+                         class="h-20 md:h-24 w-auto object-contain">
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center gap-8">
+                    <div class="relative group">
+                        <button type="button"
+                                class="flex items-center gap-1 text-[#1a5e63] hover:text-[#a167a5] transition-colors Montserrat text-xs uppercase tracking-widest font-semibold">
+                            Contactos
+                            <span class="material-symbols-outlined text-sm">expand_more</span>
+                        </button>
+
+                        <div class="absolute right-0 top-full mt-2 min-w-[220px] bg-white border border-[#efe0d2] rounded-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 z-50">
+                            <a href="mailto:windrose.travels.consultant@gmail.com?subject=Pedido%20de%20Or%C3%A7amento&body=Ol%C3%A1%2C%20gostaria%20de%20pedir%20um%20or%C3%A7amento." target="_blank" rel="noopener noreferrer" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">Email</a>
+                            <a href="https://ig.me/m/rosadosdestinos" target="_blank" rel="noopener noreferrer" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">Instagram</a>
+                            <a href="https://m.me/61564943354346" target="_blank" rel="noopener noreferrer" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">Facebook</a>
+                        </div>
+                    </div>
+
+                    <!-- Dropdown -->
+                    <div class="relative group">
+                        <button type="button"
+                                class="flex items-center gap-1 text-[#1a5e63] hover:text-[#a167a5] transition-colors Montserrat text-xs uppercase tracking-widest font-semibold">
+                            Links de afiliados
+                            <span class="material-symbols-outlined text-sm">expand_more</span>
+                        </button>
+
+                        <div class="absolute right-0 top-full mt-2 min-w-[220px] bg-white border border-[#efe0d2] rounded-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 z-50">
+                            <a href="https://www.iatiseguros.pt?r=45430850655405" target="_blank" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">Seguros de viagem - IATI 5% desconto</a>
+                            <a href="https://holafly.sjv.io/POVX9Q" target="_blank" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">ESIM - Holafly 5% desconto</a>
+                            <a href="#" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">Atividades - Get your Guide 5% desconto</a>
+                            <a href="https://plataforma.consultadoviajanteonline.pt/?referral=windrose" target="_blank" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">Consulta do viajante</a>
+                            <a href="https://chat.whatsapp.com/B5okqhuPaJcEK2qf6KrKKE" target="_blank" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">Aderir ao grupo das Promoções novidades</a>
+                            <a href="https://publishnl.bookmundo.com/site/?r=userwebsite/bookdetails&id=411268" target="_blank" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">Livro de pinturas para crianças - PT</a>
+                            <a href="https://publishpt.bookmundo.com/site/?r=userwebsite/bookdetails&id=428016" target="_blank" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">libro para colorear - ¡Los colores del mundo! - ES</a>
+                            <a href="https://publishde.bookmundo.com/site/?r=userwebsite/bookdetails&id=432708" target="_blank" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">The colores the world!- Coloring Book! - EN</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right side -->
+                <div class="flex items-center gap-2">
+
+                    <!-- Mobile button -->
+                    <button id="mobileMenuBtn"
+                            type="button"
+                            class="md:hidden inline-flex items-center justify-center w-10 h-10 border border-[#d9c9bc] text-[#1a5e63]"
+                            aria-label="Abrir menu">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="md:hidden hidden pb-4">
+                <div class="border-t border-[#efe0d2] pt-3 space-y-1">
+                    <details class="px-2">
+                        <summary class="cursor-pointer py-2 text-sm text-[#1a5e63]">Contactos</summary>
+                        <div class="mt-1 border border-[#efe0d2] bg-white rounded-sm">
+                            <a href="mailto:windrose.travels.consultant@gmail.com?subject=Pedido%20de%20Or%C3%A7amento&body=Ol%C3%A1%2C%20gostaria%20de%20pedir%20um%20or%C3%A7amento." target="_blank" rel="noopener noreferrer" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">Email</a>
+                            <a href="https://ig.me/m/rosadosdestinos" target="_blank" rel="noopener noreferrer" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">Instagram</a>
+                            <a href="https://m.me/61564943354346" target="_blank" rel="noopener noreferrer" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">Facebook</a>
+                        </div>
+                    </details>
+
+                    <details class="px-2">
+                        <summary class="cursor-pointer py-2 text-sm text-[#1a5e63]">Links de afiliados</summary>
+                        <div class="mt-1 border border-[#efe0d2] bg-white rounded-sm">
+                            <a href="https://www.iatiseguros.pt?r=45430850655405" target="_blank" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">Seguros de viagem - IATI 5% desconto</a>
+                            <a href="https://holafly.sjv.io/POVX9Q" target="_blank" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">ESIM - Holafly 5% desconto</a>
+                            <a href="#" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">Atividades - Get your Guide 5% desconto</a>
+                            <a href="https://plataforma.consultadoviajanteonline.pt/?referral=windrose" target="_blank" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">Consulta do viajante</a>
+                            <a href="https://chat.whatsapp.com/B5okqhuPaJcEK2qf6KrKKE" target="_blank" class="block px-4 py-3 text-sm text-[#1a5e63] hover:bg-[#fff1e6]">Aderir ao grupo das Promoções novidades</a>
+                        </div>
+                    </details>
+
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative h-screen w-full flex items-center justify-center overflow-hidden">
+            <div class="absolute inset-0 z-0">
+                <img class="w-full h-full object-cover brightness-[0.85]" data-alt="cinematic wide shot of a pristine tropical beach with turquoise water and leaning palm trees under a soft pink sunset sky" src="images/fundo.jpg">
+                <!-- reforço de contraste -->
+                <div class="absolute inset-0 bg-black/35"></div>
+                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#fff8f4]"></div>
+            </div>
+
+            <div class="relative z-10 text-center px-6 max-w-5xl">
+                <span class="font-body font-semibold tracking-wide text-2xl md:text-3xl text-[#d8a8de] mb-4 block" style="text-shadow: 0 2px 8px rgba(0,0,0,0.55);">A tua próxima aventura começa aqui</span>
+                <h1 class="font-serif text-6xl md:text-8xl text-[#d8a8de] mb-8 leading-[1.1] tracking-tight" style="text-shadow: 0 2px 10px rgba(0,0,0,0.55);">
+                    Rosa dos Destinos<span style="font-size: 0.25em; font-weight: inherit; letter-spacing: -0.025em;">®</span><span style="font-size: 6rem; font-weight: inherit; letter-spacing: -0.025em;">&nbsp;</span><br>
+                </h1>
+                <p class="font-body text-2xl font-semibold text-[#e8c8ec] mb-12 max-w-2xl mx-auto leading-relaxed" style="text-shadow: 0 2px 8px rgba(0,0,0,0.55);">
+                    Oriento-te para que aproveites ao máximo uma viagem à tua medida, sem preocupações!
+                </p>
+                <div class="flex flex-col md:flex-row gap-6 justify-center items-center">
+                    <a href="https://whatsform.com/wfuhi0" target="_blank" class="bg-[#a167a5] text-white px-10 py-5 rounded-full font-bold shadow-xl hover:scale-105 transition-transform">Pedir um orçamento</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Presentation Section -->
+        <section class="py-32 px-12 max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-20 items-center">
+                <div class="relative">
+                    <div class="absolute -top-10 -left-10 w-64 h-64 bg-tertiary-container/10 rounded-full blur-3xl -z-10"></div>
+                    <img class="rounded-xl editorial-shadow w-full aspect-[4/5] object-cover rotate-[-2deg] object-top" data-alt="Waterfall photo" src="images/Andreia1.jpg">
+                    <div class="absolute -bottom-12 -right-12 w-1/2 aspect-[4/5] hidden md:block">
+                        <img class="rounded-xl editorial-shadow border-8 border-surface w-full h-full object-contain rotate-[4deg] bg-white"
+                             src="images/Andreia2.jpeg"
+                             alt="Portrait photo">
+                    </div>
+                </div>
+                <div class="space-y-8">
+                    <span class="font-label text-[#b57abc] tracking-[0.2em] uppercase font-bold text-xs block">Quem é a Andreia?</span>
+                    <h2 class="font-serif text-5xl text-on-surface leading-tight">Sou apaixonada por criar itinerários que <span class="text-[#b57abc] italic">contam histórias.</span></h2>
+                    <p class="font-body text-lg text-on-surface-variant leading-relaxed">
+                        Sou a Andreia, tenho 36 anos, consultora de viagens e sou apaixonada pela criação de conteúdo.
+                        Viajo com os meus filhos que, desde pequeninos, têm partilhado comigo a paixão por explorar o mundo. O meu objetivo é ajudar outras famílias a viajar com os seus filhos sem receios,
+                        criando memórias e experiências inesquecíveis juntos. Descomplicar é o meu lema e será o segredo para te guiar na tua próxima aventura!
+                    </p>
+                    <div class="pt-4">
+                        <a class="font-bold text-[#b57abc] group flex items-center gap-2" href="https://www.instagram.com/windrosefamily/">Clica aqui para acompanhares as nossas aventuras</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Destinations -->
+        <section class="bg-surface-container-low py-32 overflow-hidden">
+            <section class="bg-surface-container-low py-32 overflow-hidden">
+                <div class="px-12 mb-16 max-w-7xl mx-auto flex justify-between items-end">
+                    <div>
+                        <span class="font-label text-secondary tracking-[0.2em] uppercase font-bold text-xs block mb-4">Exploração</span>
+                        <h2 class="font-serif text-5xl text-on-surface">Destinos em Destaque</h2>
+                    </div>
+                    <div class="hidden md:flex gap-4">
+                        <button id="destPrev" type="button" class="p-3 border border-outline/20 rounded-full hover:bg-white transition-colors">
+                            <span class="material-symbols-outlined">chevron_left</span>
+                        </button>
+                        <button id="destNext" type="button" class="p-3 border border-outline/20 rounded-full hover:bg-white transition-colors">
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="destTrack" class="flex gap-8 px-12 overflow-x-auto pb-12 snap-x no-scrollbar scroll-smooth">
+                    <!-- Card Paris -->
+                    <div class="min-w-[400px] snap-start group relative rounded-xl overflow-hidden editorial-shadow bg-white">
+                        <div class="h-[500px] overflow-hidden">
+                            <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="Paris cityscape with the Eiffel Tower in the distance during the blue hour with glowing city lights" src="images/disney.jpg">
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+                        <div class="absolute bottom-0 left-0 p-8 text-white">
+                            <p class="font-label text-[10px] tracking-widest uppercase mb-2 opacity-80">França</p>
+                            <h3 class="font-serif text-3xl mb-4">DisneyLand Paris</h3>
+                        </div>
+                    </div>
+
+                    <!-- Card Djerba -->
+                    <div class="min-w-[400px] snap-start group relative rounded-xl overflow-hidden editorial-shadow bg-white">
+                        <div class="h-[500px] overflow-hidden">
+                            <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="crystalline turquoise water and rock formations at Fernando de Noronha beach Brazil in bright midday sun" src="images/djerba.jpg">
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+                        <div class="absolute bottom-0 left-0 p-8 text-white">
+                            <p class="font-label text-[10px] tracking-widest uppercase mb-2 opacity-80">África</p>
+                            <h3 class="font-serif text-3xl mb-4">Tunísia</h3>
+                        </div>
+                    </div>
+
+                    <!-- Card Cabo Verde -->
+                    <div class="min-w-[400px] snap-start group relative rounded-xl overflow-hidden editorial-shadow bg-white">
+                        <div class="h-[500px] overflow-hidden">
+                            <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="vibrant theme park castle with colorful flags under a bright blue sky with fluffy white clouds" src="images/caboverde.jpg">
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+                        <div class="absolute bottom-0 left-0 p-8 text-white">
+                            <p class="font-label text-[10px] tracking-widest uppercase mb-2 opacity-80">África</p>
+                            <h3 class="font-serif text-3xl mb-4">Cabo Verde</h3>
+                        </div>
+                    </div>
+
+                    <!-- Card Caraíbas -->
+                    <div class="min-w-[400px] snap-start group relative rounded-xl overflow-hidden editorial-shadow bg-white">
+                        <div class="h-[500px] overflow-hidden">
+                            <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="traditional yellow tram on a narrow cobbled street in Lisbon Portugal with colorful tiled buildings" src="images/caraibas.jpg">
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+                        <div class="absolute bottom-0 left-0 p-8 text-white">
+                            <p class="font-label text-[10px] tracking-widest uppercase mb-2 opacity-80">América do Sul</p>
+                            <h3 class="font-serif text-3xl mb-4">Caraíbas</h3>
+                        </div>
+                    </div>
+
+                    <!-- Europa -->
+                    <div class="min-w-[400px] snap-start group relative rounded-xl overflow-hidden editorial-shadow bg-white">
+                        <div class="h-[500px] overflow-hidden">
+                            <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="traditional yellow tram on a narrow cobbled street in Lisbon Portugal with colorful tiled buildings" src="images/europa.jpg">
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+                        <div class="absolute bottom-0 left-0 p-8 text-white">
+                            <p class="font-label text-[10px] tracking-widest uppercase mb-2 opacity-80">Europa</p>
+                            <h3 class="font-serif text-3xl mb-4">Europa</h3>
+                        </div>
+                    </div>
+
+                    <!-- Japão -->
+                    <div class="min-w-[400px] snap-start group relative rounded-xl overflow-hidden editorial-shadow bg-white">
+                        <div class="h-[500px] overflow-hidden">
+                            <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="traditional yellow tram on a narrow cobbled street in Lisbon Portugal with colorful tiled buildings" src="images/japao.jpg">
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+                        <div class="absolute bottom-0 left-0 p-8 text-white">
+                            <p class="font-label text-[10px] tracking-widest uppercase mb-2 opacity-80">Ásia</p>
+                            <h3 class="font-serif text-3xl mb-4">Japão</h3>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Why Choose Us -->
+            <section class="py-32 px-12 max-w-7xl mx-auto">
+                <div class="text-center mb-20">
+                    <span class="font-body font-semibold tracking-wide text-3xl text-[#b57abc] mb-2 block">Descobre o mundo comigo!</span>
+                    <h2 class="font-serif text-5xl">Ajudo-te a teres a tua viagem de sonho!</h2>
+                </div>
+                <div class="grid md:grid-cols-3 gap-16">
+                    <div class="group text-center">
+                        <div class="w-20 h-20 bg-surface-container rounded-full flex items-center justify-center mx-auto mb-8 group-hover:bg-primary transition-colors">
+                            <span class="material-symbols-outlined text-4xl text-primary group-hover:text-white" data-icon="verified_user">verified_user</span>
+                        </div>
+                        <h3 class="font-bold text-xl mb-4 Montserrat uppercase tracking-wider">planeamento da viagem</h3>
+                        <p class="text-on-surface-variant leading-relaxed">Inclui reservas de voo, alojamento e transportes com os melhores preços. Inclui sugestão de atividades únicas e experiências culturais autênticas e acompanhamento 24h antes e durante a tua viagem.</p>
+                    </div>
+                    <div class="group text-center">
+                        <div class="w-20 h-20 bg-surface-container rounded-full flex items-center justify-center mx-auto mb-8 group-hover:bg-primary transition-colors">
+                            <span class="material-symbols-outlined text-4xl text-primary group-hover:text-white" data-icon="hotel">hotel</span>
+                        </div>
+                        <h3 class="font-bold text-xl mb-4 Montserrat uppercase tracking-wider">Descontos em seguros, consulta do viajante e atividades</h3>
+                        <p class="text-on-surface-variant leading-relaxed">Acesso exclusivo aos hotéis e resorts mais luxuosos e bem avaliados do mundo.</p>
+                    </div>
+                    <div class="group text-center">
+                        <div class="w-20 h-20 bg-surface-container rounded-full flex items-center justify-center mx-auto mb-8 group-hover:bg-primary transition-colors">
+                            <span class="material-symbols-outlined text-4xl text-primary group-hover:text-white" data-icon="auto_awesome">auto_awesome</span>
+                        </div>
+                        <h3 class="font-bold text-xl mb-4 Montserrat uppercase tracking-wider">Itinerários por Medida</h3>
+                        <p class="text-on-surface-variant leading-relaxed">Cada itinerário é construído de raiz, refletindo os seus gostos e ritmo de viagem.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Testimonial Section -->
+            <!-- Testimonial Carousel Section -->
+            <section id="reviews" class="py-24 bg-primary text-on-primary rounded-[3rem] mx-4 md:mx-12 relative overflow-hidden">
+                <div class="max-w-5xl mx-auto px-6 text-center">
+                    <span class="material-symbols-outlined text-6xl text-tertiary-fixed mb-8 opacity-50">format_quote</span>
+                    <div id="reviewTrack" class="relative min-h-[280px]">
+                        <article class="review-slide">
+                            <p class="font-serif text-3xl md:text-4xl leading-relaxed mb-12 italic">
+                                "A Andreia é uma exelente profissional a quem confio as minhas viagens de férias."
+                            </p>
+                            <div class="flex items-center justify-center gap-6">
+                                <img class="w-20 h-20 roeunded-full border-4 border-white/20 object-cover" src="images/maedolampi.jpg" alt="Foto Maria">
+                                <div class="text-left">
+                                    <h4 class="font-bold text-xl Montserrat">Ana Teodoro</h4>
+                                    <p class="text-on-primary/60 text-sm">Roma e Atenas</p>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="review-slide hidden">
+                            <p class="font-serif text-3xl md:text-4xl leading-relaxed mb-12 italic">
+                                "Já fiz 2 viagens organizadas pela Rosa dos Destinos. Correu tudo na perfeição. Não tendo experiência nenhuma em organizar as minhas próprias viagens entreguei tudo nas mãos deles.
+                                Avião, estadias, transfers e roteiros. Na última surgiu um problema no destino, que a Andreia tomou imediatamente todas as medidas para resolver, tendo sido ultrapassado com muito sucesso.
+                                Recomendo muito. Qualquer viagem que vier a fazer será sempre com eles."
+                            </p>
+                            <div class="flex items-center justify-center gap-6">
+                                <img class="w-20 h-20 rounded-full border-4 border-white/20 object-cover" src="images/filomena.png" alt="Foto Joana">
+                                <div class="text-left">
+                                    <h4 class="font-bold text-xl Montserrat">Filomena Faúlha</h4>
+                                    <p class="text-on-primary/60 text-sm">Berlim, Zagreb, Tallin e Helsínquia</p>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="review-slide hidden">
+                            <p class="font-serif text-3xl md:text-4xl leading-relaxed mb-12 italic">
+                                "Adoramos o acompanhamento e a ajuda, tanto no planeamento como na própria viagem em si.
+                                Tudo organizado sem termos tido necessidade de nos preocupar e com o plano de visitas para não perdermos nada da nossa viagem.
+                                Obrigada por toda a ajuda 🙏
+                                Sem dúvida que a próxima viagem será com a vossa incrível ajuda."
+                            </p>
+                            <div class="flex items-center justify-center gap-6">
+                                <img class="w-20 h-20 rounded-full border-4 border-white/20 object-cover" src="images/daniela.png" alt="Foto Carlos">
+                                <div class="text-left">
+                                    <h4 class="font-bold text-xl Montserrat">Daniela Rebocho</h4>
+                                    <p class="text-on-primary/60 text-sm">Salou</p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="mt-10 flex items-center justify-center gap-3">
+                        <button id="prevReview" type="button" class="w-10 h-10 border border-white/30 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+                            <span class="material-symbols-outlined">chevron_left</span>
+                        </button>
+                        <button type="button" class="review-dot w-2.5 h-2.5 rounded-full bg-white"></button>
+                        <button type="button" class="review-dot w-2.5 h-2.5 rounded-full bg-white/40"></button>
+                        <button type="button" class="review-dot w-2.5 h-2.5 rounded-full bg-white/40"></button>
+                        <button id="nextReview" type="button" class="w-10 h-10 border border-white/30 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </button>
+                    </div>
+                    <div class="mt-8">
+                        <a href="https://g.page/r/Cd4tHyBIhECgEBM/review" target="_blank"
+                           class="inline-block border border-white/40 text-white px-6 py-3 rounded-full font-semibold Montserrat text-xs uppercase tracking-widest hover:bg-white hover:text-[#1a5e63] transition-colors">
+                            Ver mais avaliações de outros clientes
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Call to Action Section -->
+            <section class="py-32 px-12 max-w-4xl mx-auto text-center">
+                <span class="font-body font-semibold tracking-wide text-4xl text-secondary mb-4 block">Pronto para começar?</span>
+                <h2 class="font-serif text-6xl mb-8">Pronto para planear a tua próxima aventura?</h2>
+                <p class="font-body text-xl text-on-surface-variant mb-12 leading-relaxed">Fala comigo para planearmos o teu próximo destino.</p>
+                <a href="https://whatsform.com/wfuhi0" target="_blank" class="bg-primary text-on-primary px-12 py-6 rounded-full font-bold shadow-xl hover:scale-105 transition-transform Montserrat text-sm uppercase tracking-widest">Solicita o teu orçamento</a>
+            </section>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full rounded-t-[3rem] mt-20 bg-[#1f6b70] text-[#eaf6f5]">
+        <div class="max-w-6xl mx-auto px-6 md:px-10 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
+
+                <!-- Bloco do logo -->
+                <div class="md:col-span-4">
+                    <div class="w-48 h-48 bg-white/90 border border-white/40 rounded-none flex items-center justify-center">
+                        <img src="images/logo.png"
+                             alt="Logótipo Rosa dos Destinos"
+                             class="max-w-[82%] max-h-[82%] object-contain" />
+                    </div>
+                </div>
+
+                <!-- Bloco das colunas -->
+                <div class="md:col-span-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="min-w-0">
+                            <p class="text-xs uppercase tracking-widest font-semibold text-[#8ccbcc] mb-3">Contactos</p>
+                            <ul class="space-y-2 text-sm">
+                                <li>
+                                    <span href="mailto:teuemail@dominio.com"
+                                       class="block max-w-full break-all text-[#eaf6f5]/90 hover:text-white transition-colors">
+                                        windrose.travels.consultant@gmail.com
+                                    </span>
+                                </li>
+                                <li>
+                                    <span href="https://m.me/61564943354346" target="_blank" rel="noopener noreferrer"
+                                       class="text-[#eaf6f5]/90 hover:text-white transition-colors">
+                                        Seixal, Portugal
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="min-w-0">
+                            <p class="text-xs uppercase tracking-widest font-semibold text-[#8ccbcc] mb-3">Social</p>
+                            <ul class="space-y-2 text-sm">
+                                <li><a href="https://www.instagram.com/rosadosdestinos/" target="_blank" rel="noopener noreferrer" class="text-[#eaf6f5]/90 hover:text-white transition-colors">Instagram</a></li>
+                                <li><a href="https://www.facebook.com/profile.php?id=61564943354346&locale=pt_PT" target="_blank" rel="noopener noreferrer" class="text-[#eaf6f5]/90 hover:text-white transition-colors">Facebook</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="min-w-0">
+                            <p class="text-xs uppercase tracking-widest font-semibold text-[#8ccbcc] mb-3">Serviços</p>
+                            <ul class="space-y-2 text-sm">
+                                <li><span href="#" class="text-[#eaf6f5]/90 hover:text-white transition-colors">Roteiros personalizados</span></li>
+                                <li><span href="#" class="text-[#eaf6f5]/90 hover:text-white transition-colors">Acompanhamento 24h por dia</span></li>
+                                <li><span href="#" class="text-[#eaf6f5]/90 hover:text-white transition-colors">Viagens à medida</span></li>
+                                <li><span href="#" class="text-[#eaf6f5]/90 hover:text-white transition-colors">Descontos em seguros, consulta do viajante e atividades</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-10 pt-6 border-t border-white/15 flex flex-col md:flex-row md:justify-between md:items-center gap-3">
+                <div>
+                    <p>© 2026 Rosa dos Destinos em parceria com AtuaViagem, Agência de Viagens e Turismo, Lda. Todos os direitos reservados.</p>
+                    <p>RNAVT nº 12799 | Licença: Registo Nacional de Turismo, Turismo de Portugal</p>
+                </div>
+                <a href="#top" class="text-xs uppercase tracking-widest text-[#8ccbcc] hover:text-white transition-colors">Voltar ao topo</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
